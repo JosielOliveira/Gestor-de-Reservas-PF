@@ -9,16 +9,16 @@ export class Reserva {
     }
   
     mostrarDetalle() {
-      return `Reserva ${this.id}: ${this.usuario} ha reservado ${this.espacio} para el ${this.fecha.toLocaleString()}`;
+      return `Reserva ${this.id}: ${this.usuario} ha reservado ${this.espacio} para el ${this.fecha.toLocaleString('es-ES', { hour12: false })}`;
     }
   
-    // Sobreescribe la serialización a JSON para mostrar la fecha en formato local
+    // Sobreescribe la serialización a JSON para mostrar la fecha en formato local consistente
     toJSON() {
       return {
         id: this.id,
         usuario: this.usuario,
         espacio: this.espacio,
-        fecha: this.fecha.toLocaleString()
+        fecha: this.fecha.toLocaleString('es-ES', { hour12: false })
       };
     }
   }
