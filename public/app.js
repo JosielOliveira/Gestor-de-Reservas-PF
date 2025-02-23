@@ -34,13 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnEditar = document.createElement('button');
         btnEditar.textContent = 'Editar';
         btnEditar.addEventListener('click', async () => {
-          // Usamos prompt() para pedir nuevos valores (puedes mejorar esto en el futuro)
+          // Usamos los valores rawFecha y rawHora para obtener la fecha y hora en formato ISO.
           const nuevoUsuario = prompt("Nuevo usuario:", reserva.usuario);
           const nuevoEspacio = prompt("Nuevo espacio:", reserva.espacio);
-          // Se espera que la fecha se introduzca en formato "yyyy-mm-dd"
-          const nuevaFecha = prompt("Nueva fecha (yyyy-mm-dd):", reserva.fecha.split(',')[0]);
-          // Se espera que la hora se introduzca en formato "HH:mm"
-          const nuevaHora = prompt("Nueva hora (HH:mm):", "15:00");
+          const nuevaFecha = prompt("Nueva fecha (yyyy-mm-dd):", reserva.rawFecha);
+          const nuevaHora = prompt("Nueva hora (HH:mm):", reserva.rawHora);
 
           if (!nuevoUsuario || !nuevoEspacio || !nuevaFecha || !nuevaHora) {
             alert("Todos los campos son requeridos");
