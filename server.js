@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { Reserva } from './reserva.js';
+import { espacios } from './espacios.js'; // Importa el array de espacios deportivos
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,21 +14,25 @@ app.use(cors());
 
 let reservas = []; // Almacenamiento en memoria para el MVP
 
+// Nuevo Endpoint para obtener los espacios deportivos
+app.get('/espacios', (req, res) => {
+  res.json(espacios);
+});
+
 // Endpoint para crear una reserva con validación
 app.post('/reservas', (req, res) => {
-    const { id, usuario, espacio, fecha, hora } = req.body;
-    
-    // Validación: asegúrate de que todos los campos estén presentes
-    if (!id || !usuario || !espacio || !fecha || !hora) {
-      return res.status(400).json({ mensaje: 'Todos los campos son requeridos' });
-    }
-    
-    const nuevaReserva = new Reserva(id, usuario, espacio, fecha, hora);
-    reservas.push(nuevaReserva);
-    res.status(201).json({ mensaje: 'Reserva creada', reserva: nuevaReserva });
-  });
+  const { id, usuario, espacio, fecha, hora } = req.body;
   
-
+  // Validación: asegúrate de que todos los campos estén presentes
+  if (!id || !usuario || !espacio || !fecha || !hora) {
+    return res.status(400).json({ mensaje: 'Todos los campos son requeridos' });
+  }
+  
+  const nuevaReserva = new Reserva(id, usuario, espacio, fecha, hora);
+  reservas.push(nuevaReserva);
+  res.status(201).json({ mensaje: 'Reserva creada', reserva: nuevaReserva });
+});
+  
 // Endpoint para listar reservas
 app.get('/reservas', (req, res) => {
   res.json(reservas);
@@ -40,16 +45,16 @@ app.listen(PORT, () => {
 
 // Endpoint para cancelar (eliminar) una reserva por id
 app.delete('/reservas/:id', (req, res) => {
-    const { id } = req.params;
-    // Busca el índice de la reserva
-    const index = reservas.findIndex(reserva => reserva.id === id);
-    if (index === -1) {
-      return res.status(404).json({ mensaje: 'Reserva no encontrada' });
-    }
-    // Elimina la reserva del array
-    reservas.splice(index, 1);
-    res.status(200).json({ mensaje: 'Reserva cancelada' });
-  });
+  const { id } = req.params;
+  // Busca el índice de la reserva
+  const index = reservas.findIndex(reserva => reserva.id === id);
+  if (index === -1) {
+    return res.status(404).json({ mensaje: 'Reserva no encontrada' });
+  }
+  // Elimina la reserva del array
+  reservas.splice(index, 1);
+  res.status(200).json({ mensaje: 'Reserva cancelada' });
+});
   
 // Endpoint para actualizar una reserva por id
 app.put('/reservas/:id', (req, res) => {
