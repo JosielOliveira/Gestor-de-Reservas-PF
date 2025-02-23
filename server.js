@@ -37,3 +37,17 @@ const PORT = process.env.PORT || 3009;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
+
+// Endpoint para cancelar (eliminar) una reserva por id
+app.delete('/reservas/:id', (req, res) => {
+    const { id } = req.params;
+    // Busca el índice de la reserva
+    const index = reservas.findIndex(reserva => reserva.id === id);
+    if (index === -1) {
+      return res.status(404).json({ mensaje: 'Reserva no encontrada' });
+    }
+    // Elimina la reserva del array
+    reservas.splice(index, 1);
+    res.status(200).json({ mensaje: 'Reserva cancelada' });
+  });
+  

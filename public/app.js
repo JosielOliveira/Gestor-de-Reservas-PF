@@ -10,6 +10,26 @@ document.addEventListener('DOMContentLoaded', () => {
         reservas.forEach(reserva => {
           const li = document.createElement('li');
           li.textContent = `ID: ${reserva.id}, Usuario: ${reserva.usuario}, Espacio: ${reserva.espacio}, Fecha y Hora: ${new Date(reserva.fecha).toLocaleString()}`;
+  
+          // Crear botón para cancelar la reserva
+          const btnCancelar = document.createElement('button');
+          btnCancelar.textContent = 'Cancelar';
+          btnCancelar.addEventListener('click', async () => {
+            try {
+              const resDelete = await fetch(`http://localhost:3009/reservas/${reserva.id}`, {
+                method: 'DELETE'
+              });
+              if (resDelete.ok) {
+                renderReservas(); // Actualiza la lista tras cancelar
+              } else {
+                console.error('Error al cancelar la reserva');
+              }
+            } catch (error) {
+              console.error('Error al cancelar la reserva:', error);
+            }
+          });
+  
+          li.appendChild(btnCancelar);
           listaReservas.appendChild(li);
         });
       } catch (error) {
