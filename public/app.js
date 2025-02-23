@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const reservaForm = document.getElementById('reservaForm');
     const listaReservas = document.getElementById('listaReservas');
   
-    // Función para renderizar las reservas en la lista
     async function renderReservas() {
       try {
         const res = await fetch('http://localhost:3009/reservas');
@@ -10,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         listaReservas.innerHTML = '';
         reservas.forEach(reserva => {
           const li = document.createElement('li');
-          li.textContent = `ID: ${reserva.id}, Usuario: ${reserva.usuario}, Espacio: ${reserva.espacio}, Fecha: ${new Date(reserva.fecha).toLocaleDateString()}`;
+          li.textContent = `ID: ${reserva.id}, Usuario: ${reserva.usuario}, Espacio: ${reserva.espacio}, Fecha y Hora: ${new Date(reserva.fecha).toLocaleString()}`;
           listaReservas.appendChild(li);
         });
       } catch (error) {
@@ -18,13 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
-    // Evento para el envío del formulario (creación de reserva)
     reservaForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('id').value;
       const usuario = document.getElementById('usuario').value;
       const espacio = document.getElementById('espacio').value;
       const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
   
       try {
         const res = await fetch('http://localhost:3009/reservas', {
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ id, usuario, espacio, fecha })
+          body: JSON.stringify({ id, usuario, espacio, fecha, hora })
         });
         const data = await res.json();
         console.log('Reserva creada:', data);
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   
-    // Cargar la lista de reservas al iniciar
     renderReservas();
   });
   
