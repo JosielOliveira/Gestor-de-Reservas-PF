@@ -51,3 +51,15 @@ app.delete('/reservas/:id', (req, res) => {
     res.status(200).json({ mensaje: 'Reserva cancelada' });
   });
   
+// Endpoint para actualizar una reserva por id
+app.put('/reservas/:id', (req, res) => {
+  const { id } = req.params;
+  const { usuario, espacio, fecha, hora } = req.body;
+  const index = reservas.findIndex(reserva => reserva.id === id);
+  if (index === -1) {
+    return res.status(404).json({ mensaje: 'Reserva no encontrada' });
+  }
+  // Actualizamos la reserva reemplazándola por una nueva instancia
+  reservas[index] = new Reserva(id, usuario, espacio, fecha, hora);
+  res.status(200).json({ mensaje: 'Reserva actualizada', reserva: reservas[index] });
+});
