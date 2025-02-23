@@ -1,7 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
   const reservaForm = document.getElementById('reservaForm');
   const listaReservas = document.getElementById('listaReservas');
+  const espacioSelect = document.getElementById('espacioSelect');
 
+  // Función para cargar los espacios deportivos en el select
+  async function loadEspacios() {
+    try {
+      const res = await fetch('http://localhost:3009/espacios');
+      const espacios = await res.json();
+      espacioSelect.innerHTML = '';
+      espacios.forEach(espacio => {
+        const option = document.createElement('option');
+        option.value = espacio.nombre;
+        option.textContent = espacio.nombre;
+        espacioSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error al cargar espacios:', error);
+    }
+  }
+
+  // Función para renderizar la lista de reservas
   async function renderReservas() {
     try {
       const res = await fetch('http://localhost:3009/reservas');
@@ -34,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnEditar = document.createElement('button');
         btnEditar.textContent = 'Editar';
         btnEditar.addEventListener('click', async () => {
-          // Usamos los valores rawFecha y rawHora para obtener la fecha y hora en formato ISO.
+          // Usamos los valores rawFecha y rawHora para obtener datos en formato ISO
           const nuevoUsuario = prompt("Nuevo usuario:", reserva.usuario);
           const nuevoEspacio = prompt("Nuevo espacio:", reserva.espacio);
           const nuevaFecha = prompt("Nueva fecha (yyyy-mm-dd):", reserva.rawFecha);
@@ -74,11 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Evento submit para crear una reserva
   reservaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('id').value;
     const usuario = document.getElementById('usuario').value;
-    const espacio = document.getElementById('espacio').value;
+    // Obtenemos el valor seleccionado del select de espacios
+    const espacio = espacioSelect.value;
     const fecha = document.getElementById('fecha').value;
     const hora = document.getElementById('hora').value;
 
@@ -99,5 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Cargar espacios y reservas al inicio
+  loadEspacios();
   renderReservas();
 });
