@@ -96,9 +96,13 @@ app.put("/reservas/:id", async (req, res) => {
 
 const authRoutes = require("./routes/auth");
 const usuarioRoutes = require("./routes/usuarios");
+const reservasRoutes = require("./routes/reservas");
+
 
 app.use("/auth", authRoutes);
 app.use("/usuarios", usuarioRoutes);
+app.use("/reservas", reservasRoutes);
+
 
 // 📌 Iniciar servidor (SOLO UNA VEZ)
 app.listen(PORT, () => {
