@@ -94,7 +94,14 @@ app.put("/reservas/:id", async (req, res) => {
   }
 });
 
+const authRoutes = require("./routes/auth");
+const usuarioRoutes = require("./routes/usuarios");
+
+app.use("/auth", authRoutes);
+app.use("/usuarios", usuarioRoutes);
+
 // 📌 Iniciar servidor (SOLO UNA VEZ)
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 }); 
+
