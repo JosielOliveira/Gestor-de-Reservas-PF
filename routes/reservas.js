@@ -4,18 +4,27 @@ const verificarToken = require("../middleware/auth");
 
 const router = express.Router();
 
-// 📌 Obtener todas las reservas (Solo Admins)
+// 📌 Obtener todas las reservas con filtros (Solo Admins)
 router.get("/", verificarToken, async (req, res) => {
     try {
         if (req.usuario.rol !== "admin") {
             return res.status(403).json({ mensaje: "Acceso denegado. Solo administradores pueden ver todas las reservas." });
         }
-        const reservas = await Reserva.find();
+
+        const { usuario, espacio, fecha } = req.query;
+        let filtro = {};
+
+        if (usuario) filtro.usuario = usuario;  // Buscar por usuario
+        if (espacio) filtro.espacio = espacio;  // Buscar por espacio
+        if (fecha) filtro.fecha = new Date(fecha); // Buscar por fecha (Formato YYYY-MM-DD)
+
+        const reservas = await Reserva.find(filtro);
         res.json(reservas);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener reservas", error });
     }
 });
+
 
 // 📌 Obtener reservas del usuario autenticado
 router.get("/mis-reservas", verificarToken, async (req, res) => {
