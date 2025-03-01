@@ -25,11 +25,16 @@ router.get("/", verificarToken, async (req, res) => {
     }
 });
 
-
-// 📌 Obtener reservas del usuario autenticado
+// 📌 Obtener reservas del usuario autenticado con filtros
 router.get("/mis-reservas", verificarToken, async (req, res) => {
     try {
-        const reservas = await Reserva.find({ usuario: req.usuario.id });
+        const { espacio, fecha } = req.query;
+        let filtro = { usuario: req.usuario.id };  // Filtrar solo por el usuario autenticado
+
+        if (espacio) filtro.espacio = espacio;  // Buscar por espacio
+        if (fecha) filtro.fecha = new Date(fecha); // Buscar por fecha (Formato YYYY-MM-DD)
+
+        const reservas = await Reserva.find(filtro);
         res.json(reservas);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener reservas", error });
