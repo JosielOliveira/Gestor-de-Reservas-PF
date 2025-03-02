@@ -1,6 +1,7 @@
 const express = require("express");
 const Reserva = require("../models/reserva");
 const verificarToken = require("../middleware/auth");
+const enviarCorreo = require("../utils/emailService"); // 📧 Importar función para enviar correos
 
 const router = express.Router();
 
@@ -14,9 +15,9 @@ router.get("/", verificarToken, async (req, res) => {
         const { usuario, espacio, fecha } = req.query;
         let filtro = {};
 
-        if (usuario) filtro.usuario = usuario;  // Buscar por usuario
-        if (espacio) filtro.espacio = espacio;  // Buscar por espacio
-        if (fecha) filtro.fecha = new Date(fecha); // Buscar por fecha (Formato YYYY-MM-DD)
+        if (usuario) filtro.usuario = usuario;
+        if (espacio) filtro.espacio = espacio;
+        if (fecha) filtro.fecha = new Date(fecha);
 
         const reservas = await Reserva.find(filtro);
         res.json(reservas);
@@ -25,16 +26,10 @@ router.get("/", verificarToken, async (req, res) => {
     }
 });
 
-// 📌 Obtener reservas del usuario autenticado con filtros
+// 📌 Obtener reservas del usuario autenticado
 router.get("/mis-reservas", verificarToken, async (req, res) => {
     try {
-        const { espacio, fecha } = req.query;
-        let filtro = { usuario: req.usuario.id };  // Filtrar solo por el usuario autenticado
-
-        if (espacio) filtro.espacio = espacio;  // Buscar por espacio
-        if (fecha) filtro.fecha = new Date(fecha); // Buscar por fecha (Formato YYYY-MM-DD)
-
-        const reservas = await Reserva.find(filtro);
+        const reservas = await Reserva.find({ usuario: req.usuario.id });
         res.json(reservas);
     } catch (error) {
         res.status(500).json({ mensaje: "Error al obtener reservas", error });
@@ -44,6 +39,8 @@ router.get("/mis-reservas", verificarToken, async (req, res) => {
 // 📌 Crear una reserva (Usuarios autenticados)
 router.post("/", verificarToken, async (req, res) => {
     try {
+        console.log("🚀 Se ejecutó POST /reservas"); // 👈 Agregado para ver si el código se ejecuta
+
         const { espacio, fecha, hora } = req.body;
 
         if (!espacio || !fecha || !hora) {
@@ -53,8 +50,17 @@ router.post("/", verificarToken, async (req, res) => {
         const nuevaReserva = new Reserva({ usuario: req.usuario.id, espacio, fecha, hora });
         await nuevaReserva.save();
 
-        res.status(201).json({ mensaje: "Reserva creada", reserva: nuevaReserva });
+        // 📧 Enviar notificación por email
+        const emailUsuario = req.usuario.email;
+        const asunto = "Confirmación de Reserva";
+        const mensaje = `Hola ${req.usuario.nombre},\n\nTu reserva en "${espacio}" para el día ${fecha} a las ${hora} ha sido confirmada.\n\nGracias por usar nuestro servicio.`;
+
+        console.log("📧 Enviando correo a:", emailUsuario);
+        await enviarCorreo(emailUsuario, asunto, mensaje);
+
+        res.status(201).json({ mensaje: "Reserva creada y correo enviado", reserva: nuevaReserva });
     } catch (error) {
+        console.error("❌ Error al crear la reserva:", error);
         res.status(500).json({ mensaje: "Error al crear la reserva", error });
     }
 });
@@ -70,7 +76,6 @@ router.put("/:id", verificarToken, async (req, res) => {
             return res.status(404).json({ mensaje: "Reserva no encontrada" });
         }
 
-        // Solo el creador de la reserva o un admin puede modificarla
         if (reserva.usuario.toString() !== req.usuario.id && req.usuario.rol !== "admin") {
             return res.status(403).json({ mensaje: "Acceso denegado. No puedes modificar esta reserva." });
         }
@@ -96,7 +101,6 @@ router.delete("/:id", verificarToken, async (req, res) => {
             return res.status(404).json({ mensaje: "Reserva no encontrada" });
         }
 
-        // Solo el creador de la reserva o un admin puede eliminarla
         if (reserva.usuario.toString() !== req.usuario.id && req.usuario.rol !== "admin") {
             return res.status(403).json({ mensaje: "Acceso denegado. No puedes eliminar esta reserva." });
         }
