@@ -39,7 +39,7 @@ router.get("/mis-reservas", verificarToken, async (req, res) => {
 // 📌 Crear una reserva (Usuarios autenticados)
 router.post("/", verificarToken, async (req, res) => {
     try {
-        console.log("🚀 Se ejecutó POST /reservas"); // 👈 Agregado para ver si el código se ejecuta
+        console.log("🚀 Se ejecutó POST /reservas");
 
         const { espacio, fecha, hora } = req.body;
 
@@ -50,15 +50,23 @@ router.post("/", verificarToken, async (req, res) => {
         const nuevaReserva = new Reserva({ usuario: req.usuario.id, espacio, fecha, hora });
         await nuevaReserva.save();
 
-        // 📧 Enviar notificación por email
+        // 📧 Enviar notificación por email al usuario y al administrador
         const emailUsuario = req.usuario.email;
-        const asunto = "Confirmación de Reserva";
-        const mensaje = `Hola ${req.usuario.nombre},\n\nTu reserva en "${espacio}" para el día ${fecha} a las ${hora} ha sido confirmada.\n\nGracias por usar nuestro servicio.`;
+        const emailAdmin = "admin@example.com"; // Email del administrador
 
-        console.log("📧 Enviando correo a:", emailUsuario);
-        await enviarCorreo(emailUsuario, asunto, mensaje);
+        const asuntoUsuario = "Confirmación de Reserva";
+        const mensajeUsuario = `Hola ${req.usuario.nombre},\n\nTu reserva en "${espacio}" para el día ${fecha} a las ${hora} ha sido confirmada.\n\nGracias por usar nuestro servicio.`;
 
-        res.status(201).json({ mensaje: "Reserva creada y correo enviado", reserva: nuevaReserva });
+        const asuntoAdmin = `Nueva Reserva - ${req.usuario.nombre}`;
+        const mensajeAdmin = `🔔 Nueva reserva creada:\n\nUsuario: ${req.usuario.nombre}\nEmail: ${emailUsuario}\nEspacio: ${espacio}\nFecha: ${fecha}\nHora: ${hora}`;
+
+        console.log("📧 Enviando correo a usuario:", emailUsuario);
+        await enviarCorreo(emailUsuario, asuntoUsuario, mensajeUsuario);
+
+        console.log("📧 Enviando copia al administrador:", emailAdmin);
+        await enviarCorreo(emailAdmin, asuntoAdmin, mensajeAdmin);
+
+        res.status(201).json({ mensaje: "Reserva creada y correos enviados", reserva: nuevaReserva });
     } catch (error) {
         console.error("❌ Error al crear la reserva:", error);
         res.status(500).json({ mensaje: "Error al crear la reserva", error });
