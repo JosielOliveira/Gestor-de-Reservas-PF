@@ -1,5 +1,6 @@
 const express = require("express");
 const Reserva = require("../models/reserva");
+const Usuario = require("../models/usuario"); // Asegurar que tenemos acceso al modelo de usuario
 const verificarToken = require("../middleware/auth");
 const enviarCorreo = require("../utils/emailService"); // 📧 Importar función para enviar correos
 
@@ -50,8 +51,21 @@ router.post("/", verificarToken, async (req, res) => {
         const nuevaReserva = new Reserva({ usuario: req.usuario.id, espacio, fecha, hora });
         await nuevaReserva.save();
 
-        // 📧 Enviar notificación por email al usuario y al administrador
-        const emailUsuario = req.usuario.email;
+        // 📧 Verificar el email del usuario
+        let emailUsuario = req.usuario.email;
+
+        if (!emailUsuario) {
+            console.log("⚠️ Email no encontrado en el token, buscando en la base de datos...");
+            const usuarioDB = await Usuario.findById(req.usuario.id);
+            if (usuarioDB) {
+                emailUsuario = usuarioDB.email;
+                console.log("✅ Email obtenido de la base de datos:", emailUsuario);
+            } else {
+                console.error("❌ No se encontró el usuario en la base de datos.");
+                return res.status(500).json({ mensaje: "Error interno: Usuario no encontrado." });
+            }
+        }
+
         const emailAdmin = "admin@example.com"; // Email del administrador
 
         const asuntoUsuario = "Confirmación de Reserva";
