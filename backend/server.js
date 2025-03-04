@@ -5,10 +5,10 @@ const express = require("express");
 const cors = require("cors");
 
 // 📌 Importar middleware y rutas
-const verificarToken = require("../middleware/auth");
-const authRoutes = require("../routes/auth");
-const usuarioRoutes = require("../routes/usuarios");
-const reservasRoutes = require("../routes/reservas");
+const verificarToken = require("./middleware/auth");
+const authRoutes = require("./routes/auth");
+const usuarioRoutes = require("./routes/usuarios");
+const reservasRoutes = require("./routes/reservas");
 
 // 📌 Conexión a MongoDB Atlas usando variable de entorno
 const MONGO_URI = process.env.MONGO_URI;
@@ -32,8 +32,8 @@ app.use(express.json());
 app.use(cors());
 
 // 📌 Importar modelos
-const Reserva = require("../models/reserva");
-const Espacio = require("../models/espacios"); // Asegúrate de que este archivo existe
+const Reserva = require("./models/reserva");
+const Espacio = require("./models/espacios"); // Asegúrate de que este archivo existe
 
 // 📌 Rutas protegidas con `verificarToken`
 app.use("/reservas", verificarToken, reservasRoutes);
