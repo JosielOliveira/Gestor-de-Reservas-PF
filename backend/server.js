@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
 
-// 📌 Importar middleware y rutas
-const verificarToken = require("./middleware/auth");
+// 📌 Importar rutas
 const authRoutes = require("./routes/auth");
 const usuarioRoutes = require("./routes/usuarios");
 const reservasRoutes = require("./routes/reservas");
+const espaciosRoutes = require("./routes/espacios");
 
 // 📌 Conexión a MongoDB Atlas usando variable de entorno
 const MONGO_URI = process.env.MONGO_URI;
@@ -31,21 +31,13 @@ const PORT = process.env.PORT || 3009;
 app.use(express.json());
 app.use(cors());
 
-// 📌 Importar modelos
-const Reserva = require("./models/reserva");
-const Espacio = require("./models/espacios"); // Asegúrate de que este archivo existe
-
-// 📌 Rutas protegidas con `verificarToken`
-app.use("/reservas", verificarToken, reservasRoutes);
+// 📌 Rutas protegidas
+app.use("/reservas", reservasRoutes);
 
 // 📌 Otras rutas
 app.use("/auth", authRoutes);
 app.use("/usuarios", usuarioRoutes);
-
-// 📌 Endpoint para obtener los espacios deportivos
-app.get("/espacios", (req, res) => {
-  res.json(Espacio);
-});
+app.use("/espacios", espaciosRoutes); // ✅ AHORA ESTÁ CORRECTO
 
 // 📌 Iniciar servidor (SOLO UNA VEZ)
 app.listen(PORT, () => {
