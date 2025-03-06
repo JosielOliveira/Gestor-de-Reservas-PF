@@ -1,10 +1,8 @@
 module.exports = {
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    "./src/**/*.{html,js,jsx,ts,tsx}", // Asegúrate de incluir las extensiones de archivos que usas en tu proyecto
+  ],
   theme: {
-    extend: {},
-  },
-  variants: {
     extend: {},
   },
   plugins: [],
