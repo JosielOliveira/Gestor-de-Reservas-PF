@@ -1,28 +1,55 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function AdminPanel() {
-  const [reservas, setReservas] = useState([]);
+    const [reservas, setReservas] = useState([]);
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios.get("http://localhost:3009/admin/reservas", { headers: { Authorization: `Bearer ${token}` } })
-      .then(response => setReservas(response.data))
-      .catch(error => console.error("Error obteniendo reservas:", error));
-  }, []);
+    useEffect(() => {
+        // Función para cargar las reservas desde el backend
+        const fetchReservas = async () => {
+            try {
+                const response = await axios.get('http://localhost:3009/admin/reservas', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+                setReservas(response.data); // Almacenar las reservas en el estado
+            } catch (err) {
+                if (err.response) {
+                    // El servidor respondió con un estado fuera del rango 2xx
+                    console.error("Error en la respuesta del servidor:", err.response.status);
+                    setError(err.response.data.message);
+                } else if (err.request) {
+                    // La petición fue hecha pero no se recibió respuesta
+                    console.error("No response from server");
+                    setError("No se pudo conectar al servidor.");
+                } else {
+                    // Algo más causó un error
+                    console.error("Error loading reservations:", err.message);
+                    setError(err.message);
+                }
+            }
+        };
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Panel de Administración</h1>
-      <ul className="space-y-2">
-        {reservas.map((reserva) => (
-          <li key={reserva._id} className="p-4 bg-gray-200 rounded">
-            {reserva.nombre} - {reserva.fecha} <button className="bg-red-500 text-white p-2 ml-2">Eliminar</button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+        fetchReservas(); // Llamar a la función al montar el componente
+    }, []);
+
+    return (
+        <div>
+            <h1>Panel de Administración - Reservas</h1>
+            {error && <p>Error: {error}</p>}
+            <ul>
+                {reservas.length > 0 ? (
+                    reservas.map(reserva => (
+                        <li key={reserva.id}>
+                            {reserva.nombre} - {reserva.fecha}
+                        </li>
+                    ))
+                ) : (
+                    <p>No hay reservas disponibles.</p>
+                )}
+            </ul>
+        </div>
+    );
 }
 
 export default AdminPanel;

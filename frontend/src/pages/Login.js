@@ -9,7 +9,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();  // Prevenir el comportamiento por defecto del formulario
         try {
-            const response = await axios.post('http://localhost:3009/login', {
+            const response = await axios.post('http://localhost:3009/auth/login', {
                 email: email,
                 password: password
             });
