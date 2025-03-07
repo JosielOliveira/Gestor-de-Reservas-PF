@@ -15,7 +15,7 @@ function Login() {
       const response = await fetch("http://localhost:3009/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, contraseña: password }), // ⚠️ Asegúrate de que "contraseña" coincide con el backend
+        body: JSON.stringify({ email, contraseña: password }),
       });
 
       const data = await response.json();

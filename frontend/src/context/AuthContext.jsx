@@ -4,9 +4,8 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Estado del usuario
+  const [user, setUser] = useState(null);
 
-  // Cargar el usuario guardado al iniciar la aplicación
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -15,21 +14,33 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
       } catch (error) {
         console.error("❌ Error al parsear el usuario almacenado:", error);
-        localStorage.removeItem("user"); // Limpiar localStorage si hay un error
+        localStorage.removeItem("user"); // Evitar datos corruptos
       }
     }
   }, []);
 
   // Función para iniciar sesión
   const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData)); // Guardar usuario en localStorage
+    if (userData && userData.token) {
+      const userInfo = {
+        id: userData.usuario.id,
+        nombre: userData.usuario.nombre,
+        email: userData.usuario.email,
+        rol: userData.usuario.rol,
+        token: userData.token,
+      };
+
+      setUser(userInfo);
+      localStorage.setItem("user", JSON.stringify(userInfo)); // Guardar en localStorage
+    } else {
+      console.error("❌ Datos de usuario inválidos en login:", userData);
+    }
   };
 
   // Función para cerrar sesión
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user"); // Eliminar usuario de localStorage
+    localStorage.removeItem("user");
   };
 
   return (

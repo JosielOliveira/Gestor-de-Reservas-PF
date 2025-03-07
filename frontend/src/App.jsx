@@ -10,7 +10,7 @@ function App() {
     <Router>
       <div>
         <h1>Gestor de Reservas</h1>
-        
+
         {user ? (
           <>
             <p>Bienvenido, {user.nombre}!</p>
