@@ -6,7 +6,7 @@
   font-family: Arial, sans-serif;
 }
 
-/* Contenedor principal */
+/* Estilo del body */
 body {
   display: flex;
   justify-content: center;
@@ -15,14 +15,23 @@ body {
   background-color: #f4f4f4;
 }
 
-/* Caja del Dashboard */
-.dashboard {
+/* Contenedor del formulario */
+.login-container {
   background: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  width: 400px;
+  width: 350px;
   text-align: center;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 /* Botón */
@@ -33,7 +42,55 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 100%;
   margin-top: 10px;
+}
+
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Dashboard */
+.dashboard-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de cierre de sesión */
+.logout-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+/* Listado de reservas */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: #f8f9fa;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
 }
 
 button:hover {

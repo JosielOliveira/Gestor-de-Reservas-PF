@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 function Login() {
@@ -6,6 +6,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    document.title = "Iniciar Sesión - Gestor de Reservas"; // 🔹 Establecer título dinámico
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,14 +28,14 @@ function Login() {
         throw new Error(data.mensaje || "Error al iniciar sesión");
       }
 
-      login(data); // Guardamos el usuario en el contexto
+      login(data);
     } catch (error) {
       setError(error.message);
     }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h2>Iniciar Sesión</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>

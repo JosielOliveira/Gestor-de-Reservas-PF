@@ -10,17 +10,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        {user ? (
-          <>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Login />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
+        {/* Redirigir a Dashboard si el usuario está autenticado */}
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+        
+        {/* Ruta protegida: Si no hay usuario autenticado, redirige a Login */}
+        <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" />} />
+
+        {/* Si la ruta no existe, redirigir según autenticación */}
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
       </Routes>
     </Router>
   );

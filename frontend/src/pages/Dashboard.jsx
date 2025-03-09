@@ -1,38 +1,104 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { obtenerReservas, obtenerEspacios, crearReserva } from "../services/api"; // ✅ Importamos las funciones
 
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
   const [reservas, setReservas] = useState([]);
+  const [espacios, setEspacios] = useState([]);
+  const [nuevoEspacio, setNuevoEspacio] = useState("");
+  const [nuevaFecha, setNuevaFecha] = useState("");
+  const [nuevaHora, setNuevaHora] = useState("");
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
-    if (user) {
-      fetch("http://localhost:3009/reservas/mis-reservas", {
-        headers: { Authorization: `Bearer ${user.token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setReservas(data))
-        .catch((error) => console.error("Error al obtener reservas:", error));
-    }
+    document.title = "Dashboard - Gestor de Reservas";
+
+    const fetchData = async () => {
+      if (!user || !user.token) return;
+
+      const reservasData = await obtenerReservas(user.token);
+      const espaciosData = await obtenerEspacios();
+
+      setReservas(reservasData);
+      setEspacios(espaciosData);
+    };
+
+    fetchData();
   }, [user]);
 
+  const handleReserva = async (e) => {
+    e.preventDefault();
+    if (!nuevoEspacio || !nuevaFecha || !nuevaHora) {
+      setMensaje("⚠️ Todos los campos son obligatorios.");
+      return;
+    }
+
+    const reservaData = {
+      espacio: nuevoEspacio,
+      fecha: nuevaFecha,
+      hora: nuevaHora,
+    };
+
+    const respuesta = await crearReserva(user.token, reservaData);
+    
+    if (respuesta.ok) {
+      setMensaje("✅ Reserva creada con éxito.");
+      setReservas([...reservas, respuesta.nuevaReserva]); // Agregar la nueva reserva a la lista
+      setNuevoEspacio("");
+      setNuevaFecha("");
+      setNuevaHora("");
+    } else {
+      setMensaje("❌ Error al crear la reserva.");
+    }
+  };
+
   return (
-    <div className="dashboard">
-      <h1>Bienvenido, {user?.nombre || "Usuario"}!</h1>
-      <button onClick={logout}>Cerrar sesión</button>
+    <div className="dashboard-container">
+      <h1>Hola, {user?.nombre}!</h1>
+      <button className="logout-button" onClick={logout}>
+        Cerrar sesión
+      </button>
 
       <h2>Mis Reservas</h2>
-      <ul>
-        {reservas.length > 0 ? (
-          reservas.map((reserva) => (
+      {reservas.length === 0 ? (
+        <p>No tienes reservas.</p>
+      ) : (
+        <ul>
+          {reservas.map((reserva) => (
             <li key={reserva._id}>
-              {reserva.espacio} - {reserva.fecha} a las {reserva.hora}
+              <strong>Espacio:</strong> {reserva.espacio} - 
+              <strong> Fecha:</strong> {new Date(reserva.fecha).toLocaleDateString()} - 
+              <strong> Hora:</strong> {reserva.hora}
             </li>
-          ))
-        ) : (
-          <p>No tienes reservas.</p>
-        )}
-      </ul>
+          ))}
+        </ul>
+      )}
+
+      <h2>Hacer una nueva reserva</h2>
+      {mensaje && <p className="mensaje">{mensaje}</p>}
+      <form onSubmit={handleReserva}>
+        <div>
+          <label>Espacio:</label>
+          <select value={nuevoEspacio} onChange={(e) => setNuevoEspacio(e.target.value)} required>
+            <option value="">Selecciona un espacio</option>
+            {espacios.map((espacio) => (
+              <option key={espacio.id} value={espacio.id}>
+                {espacio.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Fecha:</label>
+          <input type="date" value={nuevaFecha} onChange={(e) => setNuevaFecha(e.target.value)} required />
+        </div>
+        <div>
+          <label>Hora:</label>
+          <input type="time" value={nuevaHora} onChange={(e) => setNuevaHora(e.target.value)} required />
+        </div>
+        <button type="submit">Reservar</button>
+      </form>
     </div>
   );
 }
