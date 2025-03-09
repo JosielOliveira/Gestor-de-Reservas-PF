@@ -1,27 +1,27 @@
 import { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   return (
     <Router>
-      <div>
-        <h1>Gestor de Reservas</h1>
-
+      <Routes>
         {user ? (
           <>
-            <p>Bienvenido, {user.nombre}!</p>
-            <button onClick={logout}>Cerrar sesión</button>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </>
         ) : (
-          <Routes>
+          <>
             <Route path="/" element={<Login />} />
-          </Routes>
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
         )}
-      </div>
+      </Routes>
     </Router>
   );
 }
