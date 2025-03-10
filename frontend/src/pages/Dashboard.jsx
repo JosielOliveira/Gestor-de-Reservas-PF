@@ -29,6 +29,8 @@ function Dashboard() {
 
   const handleReserva = async (e) => {
     e.preventDefault();
+    setMensaje(""); // Limpia el mensaje anterior
+
     if (!nuevoEspacio || !nuevaFecha || !nuevaHora) {
       setMensaje("⚠️ Todos los campos son obligatorios.");
       return;
@@ -49,7 +51,7 @@ function Dashboard() {
       setNuevaFecha("");
       setNuevaHora("");
     } else {
-      setMensaje("❌ Error al crear la reserva.");
+      setMensaje(`❌ Error: ${respuesta.mensaje || "No se pudo crear la reserva."}`);
     }
   };
 

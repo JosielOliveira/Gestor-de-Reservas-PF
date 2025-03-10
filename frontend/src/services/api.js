@@ -41,9 +41,12 @@ export const crearReserva = async (token, reservaData) => {
       body: JSON.stringify(reservaData),
     });
 
-    return response.ok ? await response.json() : { ok: false };
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.mensaje || "Error al crear la reserva");
+
+    return { ok: true, nuevaReserva: data.nuevaReserva || data };
   } catch (error) {
     console.error("❌ Error al crear reserva:", error);
-    return { ok: false };
+    return { ok: false, mensaje: error.message };
   }
 };
