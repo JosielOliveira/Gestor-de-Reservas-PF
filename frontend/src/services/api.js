@@ -1,7 +1,8 @@
-const API_URL = "http://localhost:3009";
+export const API_URL = "http://localhost:3009";
 
 // ✅ Obtener reservas del usuario
 export const obtenerReservas = async (token) => {
+  console.log("🔍 Token antes de la solicitud:", token);
   try {
     const response = await fetch(`${API_URL}/reservas/mis-reservas`, {
       method: "GET",
@@ -32,16 +33,20 @@ export const obtenerEspacios = async () => {
 // ✅ Crear una nueva reserva
 export const crearReserva = async (token, reservaData) => {
   try {
+    console.log("🔹 Enviando solicitud con token:", token);
+    
     const response = await fetch(`${API_URL}/reservas`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        "Authorization": `Bearer ${token}`, // Mantén Authorization
+        "x-auth-token": token, // Agrega x-auth-token
+        },
       body: JSON.stringify(reservaData),
     });
 
     const data = await response.json();
+
     if (!response.ok) throw new Error(data.mensaje || "Error al crear la reserva");
 
     return { ok: true, nuevaReserva: data.nuevaReserva || data };

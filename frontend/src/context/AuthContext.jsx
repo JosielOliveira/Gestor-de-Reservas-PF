@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from "react";
 
-// Crear el contexto
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -19,7 +18,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Función para iniciar sesión
   const login = (userData) => {
     if (userData && userData.token) {
       const userInfo = {
@@ -37,7 +35,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función para cerrar sesión
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");

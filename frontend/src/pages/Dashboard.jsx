@@ -36,6 +36,8 @@ function Dashboard() {
       return;
     }
 
+    console.log("🔹 Token antes de hacer la reserva:", user?.token);
+
     const reservaData = {
       espacio: nuevoEspacio,
       fecha: nuevaFecha,
@@ -67,6 +69,7 @@ function Dashboard() {
         <p>No tienes reservas.</p>
       ) : (
         <ul>
+          console.log(reservas);
           {reservas.map((reserva) => (
             <li key={reserva._id}>
               <strong>Espacio:</strong> {reserva.espacio} - 
