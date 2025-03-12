@@ -40,7 +40,7 @@ function Dashboard() {
 
     const reservaData = {
       espacio: nuevoEspacio,
-      fecha: nuevaFecha,
+      fecha: new Date(nuevaFecha).toISOString(),
       hora: nuevaHora,
     };
 
@@ -69,12 +69,18 @@ function Dashboard() {
         <p>No tienes reservas.</p>
       ) : (
         <ul>
-          console.log(reservas);
-          {reservas.map((reserva) => (
-            <li key={reserva._id}>
-              <strong>Espacio:</strong> {reserva.espacio} - 
-              <strong> Fecha:</strong> {new Date(reserva.fecha).toLocaleDateString()} - 
-              <strong> Hora:</strong> {reserva.hora}
+          {reservas.map((reserva, index) => (
+    <li key={reserva._id || reserva.id || index}>
+      <strong>Espacio:</strong> {reserva.espacio} - 
+      <strong> Fecha:</strong> {reserva.fecha
+  ? new Date(reserva.fecha).toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : "Fecha no válida"}
+
+      <strong> Hora:</strong> {reserva.hora}
             </li>
           ))}
         </ul>

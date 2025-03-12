@@ -48,7 +48,12 @@ router.post("/", verificarToken, async (req, res) => {
             return res.status(400).json({ mensaje: "Todos los campos son requeridos" });
         }
 
-        const nuevaReserva = new Reserva({ usuario: req.usuario.id, espacio, fecha, hora });
+        const nuevaReserva = new Reserva({
+            usuario: req.user.id,
+            espacio: req.body.espacio,
+            fecha: new Date(req.body.fecha).toISOString().split("T")[0], // ✅ Guarda solo la fecha en formato YYYY-MM-DD
+            hora: req.body.hora,
+        });          
         await nuevaReserva.save();
 
         // 📧 Verificar el email del usuario

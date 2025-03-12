@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
+        console.log("📌 Usuario recuperado de localStorage:", parsedUser);
         setUser(parsedUser);
       } catch (error) {
         console.error("❌ Error al parsear el usuario almacenado:", error);

@@ -1,23 +1,29 @@
 export const API_URL = "http://localhost:3009";
 
-// ✅ Obtener reservas del usuario
+// ✅ Obtener reservas del usuario con autenticación
 export const obtenerReservas = async (token) => {
-  console.log("🔍 Token antes de la solicitud:", token);
   try {
+    console.log("🔍 Enviando solicitud de reservas con token:", token); // Depuración
+
     const response = await fetch(`${API_URL}/reservas/mis-reservas`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`, // Opción 1
+        "x-auth-token": token, // Opción 2 (algunas APIs lo requieren)
       },
     });
 
-    return response.ok ? await response.json() : [];
+    const data = await response.json();
+    console.log("📩 Respuesta del servidor:", data);
+
+    return response.ok ? data : [];
   } catch (error) {
     console.error("❌ Error al obtener reservas:", error);
     return [];
   }
 };
+
 
 // ✅ Obtener lista de espacios disponibles
 export const obtenerEspacios = async () => {
@@ -34,15 +40,21 @@ export const obtenerEspacios = async () => {
 export const crearReserva = async (token, reservaData) => {
   try {
     console.log("🔹 Enviando solicitud con token:", token);
-    
+
+    // ✅ Asegurar que la fecha se convierte en ISO antes de enviarla al backend
+    const reservaDataFormatted = {
+      ...reservaData,
+      fecha: new Date(reservaData.fecha).toISOString(), // Convierte la fecha a formato ISO
+    };
+
     const response = await fetch(`${API_URL}/reservas`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`, // Mantén Authorization
         "x-auth-token": token, // Agrega x-auth-token
-        },
-      body: JSON.stringify(reservaData),
+      },
+      body: JSON.stringify(reservaDataFormatted),
     });
 
     const data = await response.json();
