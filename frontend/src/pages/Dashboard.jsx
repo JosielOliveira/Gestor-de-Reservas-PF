@@ -32,30 +32,36 @@ function Dashboard() {
     setMensaje(""); // Limpia el mensaje anterior
 
     if (!nuevoEspacio || !nuevaFecha || !nuevaHora) {
-      setMensaje("⚠️ Todos los campos son obligatorios.");
-      return;
+        setMensaje("⚠️ Todos los campos son obligatorios.");
+        return;
     }
 
     console.log("🔹 Token antes de hacer la reserva:", user?.token);
 
     const reservaData = {
-      espacio: nuevoEspacio,
-      fecha: nuevaFecha, // Mantiene el formato correcto
-      hora: nuevaHora,
+        espacio: nuevoEspacio,
+        fecha: new Date(nuevaFecha).toISOString(),
+        hora: nuevaHora,
     };
 
     const respuesta = await crearReserva(user.token, reservaData);
-    
+
     if (respuesta.ok) {
-      setMensaje("✅ Reserva creada con éxito.");
-      setReservas((prevReservas) => [...prevReservas, respuesta.nuevaReserva]); // Actualiza sin F5
-      setNuevoEspacio("");
-      setNuevaFecha("");
-      setNuevaHora("");
+        setMensaje("✅ Reserva creada con éxito.");
+        
+        // Recargar la lista de reservas después de crear una nueva
+        const reservasActualizadas = await obtenerReservas(user.token);
+        setReservas(reservasActualizadas);
+
+        // Limpiar los campos del formulario
+        setNuevoEspacio("");
+        setNuevaFecha("");
+        setNuevaHora("");
     } else {
-      setMensaje(`❌ Error: ${respuesta.mensaje || "No se pudo crear la reserva."}`);
+        setMensaje(`❌ Error: ${respuesta.mensaje || "No se pudo crear la reserva."}`);
     }
-  };
+};
+
 
   return (
     <div className="dashboard-container">
