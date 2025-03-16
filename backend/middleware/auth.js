@@ -1,24 +1,31 @@
 const jwt = require("jsonwebtoken");
+const Usuario = require("../models/usuario"); // Asegurar que tenemos el modelo de usuario
+require("dotenv").config();
 
-const verificarToken = (req, res, next) => {
-  const token = req.header("x-auth-token");
-  
-  console.log("Middleware de autenticación ejecutado."); // 👈 Agregamos esto
-  
-  if (!token) {
-    console.log("❌ No se proporcionó un token."); // 👈 Para ver si entra aquí
-    return res.status(401).json({ mensaje: "Acceso denegado, token no proporcionado" });
-  }
+const verificarToken = async (req, res, next) => {
+    const token = req.header("Authorization")?.split(" ")[1] || req.header("x-auth-token");
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = decoded; // Agregar los datos del usuario al request
-    console.log("✅ Token válido. Usuario autenticado:", req.usuario); // 👈 Para ver si el token es válido
-    next();
-  } catch (error) {
-    console.log("❌ Token inválido."); // 👈 Para ver si el token es incorrecto
-    res.status(400).json({ mensaje: "Token inválido" });
-  }
+    if (!token) {
+        return res.status(401).json({ mensaje: "Acceso denegado. Token no proporcionado." });
+    }
+
+    try {
+        // Verificar y decodificar el token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("🔓 Token decodificado:", decoded);
+
+        // Buscar el usuario en la base de datos
+        const usuario = await Usuario.findById(decoded.id).select("-password");
+        if (!usuario) {
+            return res.status(401).json({ mensaje: "Token inválido. Usuario no encontrado." });
+        }
+
+        req.user = usuario; // Guardar usuario autenticado en req.user
+        next();
+    } catch (error) {
+        console.error("❌ Error en la autenticación:", error);
+        res.status(401).json({ mensaje: "Token inválido o expirado." });
+    }
 };
 
 module.exports = verificarToken;
