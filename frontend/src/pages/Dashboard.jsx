@@ -40,7 +40,7 @@ function Dashboard() {
 
     const reservaData = {
       espacio: nuevoEspacio,
-      fecha: new Date(nuevaFecha).toISOString(),
+      fecha: nuevaFecha, // Mantiene el formato correcto
       hora: nuevaHora,
     };
 
@@ -48,7 +48,7 @@ function Dashboard() {
     
     if (respuesta.ok) {
       setMensaje("✅ Reserva creada con éxito.");
-      setReservas([...reservas, respuesta.nuevaReserva]); // Agregar la nueva reserva a la lista
+      setReservas((prevReservas) => [...prevReservas, respuesta.nuevaReserva]); // Actualiza sin F5
       setNuevoEspacio("");
       setNuevaFecha("");
       setNuevaHora("");
@@ -70,17 +70,10 @@ function Dashboard() {
       ) : (
         <ul>
           {reservas.map((reserva, index) => (
-    <li key={reserva._id || reserva.id || index}>
-      <strong>Espacio:</strong> {reserva.espacio} - 
-      <strong> Fecha:</strong> {reserva.fecha
-  ? new Date(reserva.fecha).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  : "Fecha no válida"}
-
-      <strong> Hora:</strong> {reserva.hora}
+            <li key={reserva._id || reserva.id || index}>
+              <strong>Espacio:</strong> {reserva.espacio} - 
+              <strong> Fecha:</strong> {reserva.fecha || "Fecha no válida"}
+              <strong> Hora:</strong> {reserva.hora}
             </li>
           ))}
         </ul>
