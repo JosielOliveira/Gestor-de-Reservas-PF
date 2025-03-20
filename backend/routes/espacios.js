@@ -1,10 +1,10 @@
 const express = require("express");
-const Espacio = require("../models/espacio");
+const Espacio = require("../models/espacio"); // Asegurar que el modelo existe
 const verificarToken = require("../middleware/auth");
 
 const router = express.Router();
 
-// 📌 Obtener todos los espacios (Acceso Público)
+// 📌 Obtener todos los espacios (Disponible para cualquier usuario)
 router.get("/", async (req, res) => {
     try {
         const espacios = await Espacio.find();
@@ -24,16 +24,17 @@ router.post("/", verificarToken, async (req, res) => {
 
         const { nombre, capacidad, ubicacion } = req.body;
         if (!nombre || !capacidad || !ubicacion) {
-            return res.status(400).json({ mensaje: "Todos los campos son obligatorios." });
+            return res.status(400).json({ mensaje: "Todos los campos son requeridos." });
         }
 
         const nuevoEspacio = new Espacio({ nombre, capacidad, ubicacion });
         await nuevoEspacio.save();
 
-        res.status(201).json({ mensaje: "Espacio creado con éxito", espacio: nuevoEspacio });
+        console.log("✅ Espacio creado:", nuevoEspacio);
+        res.status(201).json({ mensaje: "Espacio creado exitosamente", espacio: nuevoEspacio });
     } catch (error) {
         console.error("❌ Error al crear espacio:", error);
-        res.status(500).json({ mensaje: "Error al crear espacio", error });
+        res.status(500).json({ mensaje: "Error interno del servidor", error });
     }
 });
 
@@ -52,10 +53,11 @@ router.put("/:id", verificarToken, async (req, res) => {
         );
 
         if (!espacioActualizado) {
-            return res.status(404).json({ mensaje: "Espacio no encontrado" });
+            return res.status(404).json({ mensaje: "Espacio no encontrado." });
         }
 
-        res.json({ mensaje: "Espacio actualizado", espacio: espacioActualizado });
+        console.log("✅ Espacio actualizado:", espacioActualizado);
+        res.json({ mensaje: "Espacio actualizado correctamente", espacio: espacioActualizado });
     } catch (error) {
         console.error("❌ Error al actualizar espacio:", error);
         res.status(500).json({ mensaje: "Error al actualizar espacio", error });
@@ -70,11 +72,11 @@ router.delete("/:id", verificarToken, async (req, res) => {
         }
 
         const espacioEliminado = await Espacio.findByIdAndDelete(req.params.id);
-
         if (!espacioEliminado) {
-            return res.status(404).json({ mensaje: "Espacio no encontrado" });
+            return res.status(404).json({ mensaje: "Espacio no encontrado." });
         }
 
+        console.log("✅ Espacio eliminado:", espacioEliminado);
         res.json({ mensaje: "Espacio eliminado correctamente" });
     } catch (error) {
         console.error("❌ Error al eliminar espacio:", error);
