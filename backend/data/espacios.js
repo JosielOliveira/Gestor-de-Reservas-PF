@@ -6,4 +6,4 @@ const espacios = [
   { id: "sala-musical", nombre: "Sala Musical" }
 ];
 
-module.exports = { espacios };
+module.exports = { espacios }; 
