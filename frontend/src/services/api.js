@@ -24,7 +24,6 @@ export const obtenerReservas = async (token) => {
   }
 };
 
-
 // ✅ Obtener lista de espacios disponibles
 export const obtenerEspacios = async () => {
   try {
@@ -64,6 +63,70 @@ export const crearReserva = async (token, reservaData) => {
     return { ok: true, nuevaReserva: data.nuevaReserva || data };
   } catch (error) {
     console.error("❌ Error al crear reserva:", error);
+    return { ok: false, mensaje: error.message };
+  }
+};
+
+// ✅ Crear un nuevo espacio (Solo Admin)
+export const crearEspacio = async (token, espacioData) => {
+  try {
+    const response = await fetch(`${API_URL}/espacios`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(espacioData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.mensaje || "Error al crear el espacio");
+
+    return { ok: true, espacio: data.espacio };
+  } catch (error) {
+    console.error("❌ Error al crear espacio:", error);
+    return { ok: false, mensaje: error.message };
+  }
+};
+
+// ✅ Actualizar un espacio (Solo Admin)
+export const actualizarEspacio = async (token, espacioId, datosActualizados) => {
+  try {
+    const response = await fetch(`${API_URL}/espacios/${espacioId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(datosActualizados),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.mensaje || "Error al actualizar el espacio");
+
+    return { ok: true, espacio: data.espacio };
+  } catch (error) {
+    console.error("❌ Error al actualizar el espacio:", error);
+    return { ok: false, mensaje: error.message };
+  }
+};
+
+// ✅ Eliminar un espacio (Solo Admin)
+export const eliminarEspacio = async (token, espacioId) => {
+  try {
+    const response = await fetch(`${API_URL}/espacios/${espacioId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.mensaje || "Error al eliminar el espacio");
+
+    return { ok: true, mensaje: "Espacio eliminado correctamente" };
+  } catch (error) {
+    console.error("❌ Error al eliminar el espacio:", error);
     return { ok: false, mensaje: error.message };
   }
 };

@@ -4,6 +4,7 @@ import { AuthProvider, AuthContext } from "./context/AuthContext"; // ✅ Import
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import GestionEspacios from "./pages/GestionEspacios";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" />} />
+        <Route path="/gestion-espacios" element={<GestionEspacios />} />
         <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
       </Routes>
     </Router>
