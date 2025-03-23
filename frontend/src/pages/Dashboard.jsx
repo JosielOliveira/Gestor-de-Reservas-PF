@@ -76,10 +76,10 @@ function Dashboard() {
       ) : (
         <ul>
           {reservas.map((reserva, index) => (
-            <li key={reserva._id || reserva.id || index}>
-              <strong>Espacio:</strong> {reserva.espacio} - 
-              <strong> Fecha:</strong> {reserva.fecha || "Fecha no válida"}
-              <strong> Hora:</strong> {reserva.hora}
+  <li key={reserva?._id ?? `reserva-${index}`}>
+    <strong>Espacio:</strong> {reserva.espacio} -{" "}
+    <strong>Fecha:</strong> {reserva.fecha || "Fecha no válida"} <br />
+    <strong>Hora:</strong> {reserva.hora}
             </li>
           ))}
         </ul>

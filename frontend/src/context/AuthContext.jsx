@@ -14,10 +14,15 @@ export const AuthProvider = ({ children }) => {
         setUser(parsedUser);
       } catch (error) {
         console.error("❌ Error al parsear el usuario almacenado:", error);
-        localStorage.removeItem("user"); // Evitar datos corruptos
+        localStorage.removeItem("user");
       }
     }
   }, []);
+
+  // 👇 LOG de cambios en el estado user
+  useEffect(() => {
+    console.log("🧪 Estado actualizado de user:", user);
+  }, [user]);
 
   const login = (userData) => {
     if (userData && userData.token) {
@@ -25,12 +30,12 @@ export const AuthProvider = ({ children }) => {
         id: userData.usuario.id,
         nombre: userData.usuario.nombre,
         email: userData.usuario.email,
-        rol: userData.usuario.rol,
+        rol: userData.usuario.rol, // 👈 IMPORTANTE
         token: userData.token,
       };
 
       setUser(userInfo);
-      localStorage.setItem("user", JSON.stringify(userInfo)); // Guardar en localStorage
+      localStorage.setItem("user", JSON.stringify(userInfo));
     } else {
       console.error("❌ Datos de usuario inválidos en login:", userData);
     }
